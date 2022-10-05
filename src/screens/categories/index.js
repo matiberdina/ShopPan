@@ -1,17 +1,28 @@
-import { Button, Text, View } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
 
+import { CategoryItem } from "../../components";
+import { FlatList } from "react-native";
 import React from "react";
+import { selectCategory } from "../../store/actions";
 import { styles } from "./styles";
 
-const Categories = ({ navigation }) => {
+const Categories = ({ navigation, route }) => {
+    const dispatch = useDispatch();
+    const categories = useSelector((state) => state.category.categories);
+
+    const onSelected = (item) => {
+        dispatch(selectCategory(item.id))
+        navigation.navigate('Products', { name: item.title });
+    }
+
+    const renderItem = ({ item }) => <CategoryItem item={item} onSelected={onSelected} />
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Categorias</Text>
-            <Button 
-                title="ir a Todos los Productos"
-                onPress={() => navigation.navigate("Products")}
-            />
-        </View>
+        <FlatList 
+            data={categories}
+            renderItem={renderItem}
+            keyExtractor={item => item.id.toString()}
+            style={styles.containerList}
+        />
     )
 };
 
